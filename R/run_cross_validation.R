@@ -12,7 +12,6 @@
 #' @param cluster_corr_prop what proportion of the maximum (weighted) cluster correlation with y should be reflected by the chosen siblings. A hyperparameter. Default is 1 (meaning include all elder-sibling pairs in cluster)
 #' @param ct correlation threshold determined how much a new cluster must improve the current correlation with y in order to be added as a top cluster. A hyperparameter. Default is 1 (meaning any improvement is sufficient to add the next cluster within the greedy framework)
 #' @param k the k parameter in k fold cross validation (i.e. train/test partitions). Default is 5
-#' @param n (TODO - add this 'n times k cv' feature!) number of times to run k fold cross validation. Default is 5
 #'
 #' @return returns the list given by get_top_clusters for each n fold k cv run and includes the test correlation and train/test splits from each iteration
 #' @export
@@ -106,5 +105,3 @@ run_cross_validation <- function( y,
   
 }
 
-
-#This entire k fold cv is then done n times to estimate the robustness of the k fold cv results.
