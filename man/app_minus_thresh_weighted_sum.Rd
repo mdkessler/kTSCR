@@ -4,12 +4,14 @@
 \alias{app_minus_thresh_weighted_sum}
 \title{Weight feature importance sum on the basis of overfitting}
 \usage{
-app_minus_thresh_weighted_sum(k_cv_res, feature_importance_mat, penalty = 5)
+app_minus_thresh_weighted_sum(k_cv_res, feature_importance_mat, k, penalty = 5)
 }
 \arguments{
 \item{k_cv_res}{result from run_cross_validation (called with condensed_output = TRUE)}
 
 \item{feature_importance_mat}{feature importance values from each kTSCR iteration derived from how many times a feature was seen in a sibling}
+
+\item{k}{k number of cross validation iterations, passed from run_cross_validation function}
 
 \item{penalty}{a penalty used in the weighting. A (potential) hyperparameter. Default is 5.}
 }

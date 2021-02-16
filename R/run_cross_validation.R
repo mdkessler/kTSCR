@@ -24,14 +24,15 @@ get_app_minus_test <- function(k_cv_res, k){
 #'
 #' @param k_cv_res result from run_cross_validation (called with condensed_output = TRUE)
 #' @param feature_importance_mat feature importance values from each kTSCR iteration derived from how many times a feature was seen in a sibling
+#' @param k k number of cross validation iterations, passed from run_cross_validation function
 #' @param penalty a penalty used in the weighting. A (potential) hyperparameter. Default is 5.
-#'
+#' 
 #' @return numeric vector of weighted feature importance sums
 #' @export
 #'
 #' @examples
 #' 
-app_minus_thresh_weighted_sum <- function(k_cv_res, feature_importance_mat, penalty = 5){
+app_minus_thresh_weighted_sum <- function(k_cv_res, feature_importance_mat, k, penalty = 5){
   app_minus_test <- get_app_minus_test(k_cv_res, k)
   app_minus_test_weights <- 1 / (1 + app_minus_test)**penalty # this ensure that overfit iterations are down-weighted and underfit iterations are upweighted
   # now return a linear combination of columns in feature_importance_mat weighted by app_minus_test_weights
@@ -62,7 +63,7 @@ condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh = 0.10, weig
   feature_names <- names(feature_importance_list[[1]])
   feature_importance_mat <- matrix(unlist(feature_importance_list), ncol=length(feature_importance_list), byrow = FALSE)
   if (isTRUE(weight_sum_by_app_minus_thresh)){
-    feature_importance_vec <- app_minus_thresh_weighted_sum(k_cv_res, feature_importance_mat)
+    feature_importance_vec <- app_minus_thresh_weighted_sum(k_cv_res, feature_importance_mat, k)
   }else{
     feature_importance_vec <- apply(feature_importance_mat, 1, sum)
   }
