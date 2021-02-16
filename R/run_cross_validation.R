@@ -19,7 +19,7 @@ condense_k_cv_output <- function(k_cv_res, k){
   feature_importance_list <- k_cv_res['feature_importance', 1:k]
   feature_names <- names(feature_importance_list[[1]])
   feature_importance_mat <- matrix(unlist(feature_importance_list), ncol=length(feature_importance_list), byrow = FALSE)
-  feature_importance_vec <- apply(mat, 1, sum)
+  feature_importance_vec <- apply(feature_importance_mat, 1, sum)
 
   # output vecs as a dataframe
   app_corr_vec <- unlist(k_cv_res['app_cor', 1:k])
