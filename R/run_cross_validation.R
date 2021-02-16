@@ -67,7 +67,7 @@ condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh = 0.10, weig
   }else{
     feature_importance_vec <- apply(feature_importance_mat, 1, sum)
   }
-  names(feature_importance_vec) <- feature_names
+  rownames(feature_importance_vec) <- feature_names
   
   # now condense sibling pairs
   
