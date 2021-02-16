@@ -32,7 +32,7 @@ run_cross_validation <- function( y,
                                   standardize_features = T,
                                   cluster_corr_prop = 1,
                                   ct = 1.0,
-                                  k = 5,
+                                  k = 5
 ){
   
   if(isTRUE(Verbose)){
