@@ -89,6 +89,8 @@ condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh = 0.10, weig
   siblings_mat <- get_sibling_indices(siblings_vec)
   
   # output vecs as a list
+  app_corr_vec <- unlist(k_cv_res['app_cor', 1:k])
+  test_corr_vec <- unlist(k_cv_res['test_cor', 1:k])
   return(list(app_corr = app_corr_vec, test_corr = test_corr_vec, elders = elders_vec, siblings = siblings_mat, feature_importance = feature_importance_vec))
 }
 
