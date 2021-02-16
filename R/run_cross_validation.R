@@ -1,3 +1,23 @@
+#' Calculate apparent correlation minus test correlation
+#'
+#' Calculate app_cor - test_cor as a measure of overfitting at each k-cv iteration
+#'
+#' @param k_cv_res result from run_cross_validation (called with condensed_output = TRUE)
+#' @param k k number of cross validation iterations, passed from run_cross_validation function
+#'
+#' @return a numeric vector with app_cor - test_cor
+#' @export
+#'
+#' @examples
+#' 
+get_app_minus_test <- function(k_cv_res, k){
+  app_corr_vec <- unlist(k_cv_res['app_cor', 1:k])
+  test_corr_vec <- unlist(k_cv_res['test_cor', 1:k])
+  app_minus_test <- app_corr_vec - test_corr_vec
+  
+  return(app_minus_test)
+}
+
 #' Weight feature importance sum on the basis of overfitting
 #'
 #' When calculating feature importance by tallying the number of times a feature is in a sibling within and then across k-cv iterations, weight the tally by the overfitting seen in the iteration, as measured by app_cor - test_cor
@@ -12,31 +32,12 @@
 #' @examples
 #' 
 app_minus_thresh_weighted_sum <- function(k_cv_res, feature_importance_mat, penalty = 5){
-  app_minus_test <- get_app_minus_test(k_cv_res)
+  app_minus_test <- get_app_minus_test(k_cv_res, k)
   app_minus_test_weights <- 1 / (1 + app_minus_test)**penalty # this ensure that overfit iterations are down-weighted and underfit iterations are upweighted
   # now return a linear combination of columns in feature_importance_mat weighted by app_minus_test_weights
   return(feature_importance_mat %*% app_minus_test_weights)
 }  
 
-#' Calculate apparent correlation minus test correlation
-#'
-#' Calculate app_cor - test_cor as a measure of overfitting at each k-cv iteration
-#'
-#' @param k_cv_res result from run_cross_validation (called with condensed_output = TRUE)
-#'
-#' @return a numeric vector with app_cor - test_cor
-#' @export
-#'
-#' @examples
-#' 
-get_app_minus_test <- function(k_cv_res){
-  app_corr_vec <- unlist(k_cv_res['app_cor', 1:k])
-  test_corr_vec <- unlist(k_cv_res['test_cor', 1:k])
-  app_minus_test <- app_corr_vec - test_corr_vec
-  
-  return(app_minus_test)
-}
-  
 #' Condense k cross validation output
 #'
 #' Condense and summarize output from k cross validation iterations. Specifically, this returns the union of elders across k-cv iterations, and the total per feature of how many sibling pairs it was in across all k-cv iterations
@@ -76,7 +77,7 @@ condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh = 0.10, weig
   siblings_vec <- Reduce(intersect, siblings_list) # get intersect
 
   # now add sibling from any k-cv iteration where app_cor - test_cor <= 0.05 (TODO - make this a hyperparameter)
-  app_minus_test <- get_app_minus_test(k_cv_res)
+  app_minus_test <- get_app_minus_test(k_cv_res, k)
   app_minus_test_pass_thresh <- app_minus_test <= app_minus_test_thresh
   for (i in which(app_minus_test_pass_thresh)){
     siblings_to_add <- apply(k_cv_res['siblings', i], 1, function(x){paste0(x, collapse = "_")})

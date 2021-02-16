@@ -4,10 +4,12 @@
 \alias{get_app_minus_test}
 \title{Calculate apparent correlation minus test correlation}
 \usage{
-get_app_minus_test(k_cv_res)
+get_app_minus_test(k_cv_res, k)
 }
 \arguments{
 \item{k_cv_res}{result from run_cross_validation (called with condensed_output = TRUE)}
+
+\item{k}{k number of cross validation iterations, passed from run_cross_validation function}
 }
 \value{
 a numeric vector with app_cor - test_cor
