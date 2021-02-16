@@ -36,7 +36,7 @@ get_top_clusters(
 \item{use_diff_rank}{a logical. If true feature pairs are scored based on the difference in their per sample rank. Otherwise, pairwise scores are the indicator (I) of whether Xi>Xj}
 }
 \value{
-a list with entries y (outcome variable), KScore (calculated score used for prediction), Correlation (cor(Kscore, y)), ElderIndices (indices of elders in X), SiblingIndices (indices of siblings in X), Elders (elder variable names), siblings (sibling variable names)
+a list with entries y (outcome variable), K (calculated score used for prediction), Correlation (cor(K, y)), ElderIndices (indices of elders in X), SiblingIndices (indices of siblings in X), Elders (elder variable names), siblings (sibling variable names)
 }
 \description{
 This algorithm find the top clusters for predicting a quantitative outcome variable (y) using input features (X). Clusters are defined by a singular feature, called an elder, and all other features that optimize prediction when compared with the elder (either as an indicator function, or as difference of rank). As such, the elder-sibling pairs represent transformed features (termed pairwise features), and all elder-sibling pairs comprise the cluster.

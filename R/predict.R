@@ -1,4 +1,4 @@
-#' Title
+#' Predict y from K
 #'
 #' @param y vector with quantitative outcome variable
 #' @param K K score calculated by kTSCR procedure
@@ -8,7 +8,7 @@
 #'
 #' @examples
 #' 
-kTSCpredict <- function(y, K){
+predict <- function(y, K){
 
   # TSP.res: list object returned by getTopPairs()
 
@@ -19,7 +19,7 @@ kTSCpredict <- function(y, K){
 
 
   # error check - TODO...make test
-  stopifnot(length(TSP.res$y) == length(TSP.res$KScore))
+  #stopifnot(length(y) == length(K))
 
   # y.pred <- mean(TSP.res$y) -
   #            (cov(K,y) * (K - mean(K)) * sd(y) / sd(K))
