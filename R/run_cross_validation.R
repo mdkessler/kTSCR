@@ -95,9 +95,9 @@ run_cross_validation <- function( y,
     
     app.cor <- TSC.res$ApparentCorrelation
     
-    feature_importance <- sort(table(c(unlist(kTSCR.cv['Elders',1:5]), unlist(kTSCR.cv['Siblings',1:5]))), decreasing = TRUE)
+    feature_importance <- sort(table(TSC.res$Siblings), decreasing = TRUE)
 
-    return(list(app_cor = app.cor, test_cor = test.cor, feature_importance = feature_importance))
+    return(list(app_cor = app.cor, test_cor = test.cor, elders = TSC.res$Elders, feature_importance = feature_importance))
     
   })
   
