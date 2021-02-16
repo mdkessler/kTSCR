@@ -55,7 +55,7 @@ app_minus_thresh_weighted_sum <- function(k_cv_res, feature_importance_mat, k, p
 #' 
 condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh = 0.10, weight_sum_by_app_minus_thresh = TRUE){
   
-  # first condense elders but getting the union of elders across k_cv iterations
+  # first condense elders by getting the union of elders across k_cv iterations
   elders_vec <- unique(unlist(k_cv_res['elders', 1:k]))
   
   # now condense feature importance scores but summing tham across k_cv iterations
