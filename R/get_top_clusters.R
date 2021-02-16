@@ -12,7 +12,7 @@
 #' @param ct correlation threshold determined how much a new cluster must improve the current correlation with y in order to be added as a top cluster. A hyperparameter. Default is 1 (meaning any improvement is sufficient to add the next cluster within the greedy framework)
 #' @param use_diff_rank a logical. If true feature pairs are scored based on the difference in their per sample rank. Otherwise, pairwise scores are the indicator (I) of whether Xi>Xj
 #'
-#' @return a list with entries y (outcome variable), KScore (calculated score used for prediction), Correlation (cor(Kscore, y)), ElderIndices (indices of elders in X), SiblingIndices (indices of siblings in X), Elders (elder variable names), siblings (sibling variable names)
+#' @return a list with entries y (outcome variable), K (calculated score used for prediction), Correlation (cor(K, y)), ElderIndices (indices of elders in X), SiblingIndices (indices of siblings in X), Elders (elder variable names), siblings (sibling variable names)
 #' @export
 #'
 #' @examples
@@ -190,7 +190,7 @@ get_top_clusters <- function(y,
   
   # list to output
   res_list <- list(y = y,
-                  KScore = K,
+                  K = K,
                   ApparentCorrelation = stats::cor(K, y),
                   ElderIndices = elder_indices,
                   SiblingIndices = sibling_indices,

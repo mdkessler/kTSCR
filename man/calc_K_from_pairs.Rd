@@ -14,7 +14,7 @@ calc_K_from_pairs(pairs, X, restrict = FALSE)
 \item{restrict}{Defaults to FALSE. Otherwise, must be a vector of feature names to restrict analysis to. If provided, the output matrices will only contain pairwise feature scores for comparisons that always include at least one of the features from the restrict vector.In other words, the rows of the output matrices will be restricted to the features in restrict although the cols will still include all features This way, all restrict features are compared to all other features, which allows for the inclusion of non-restrict features in pairs, which may reflect important feature relationships. Otherwise, if restrict == false, all features will be considered. Used below by the get_pairwise_rank_matrices() function, which while not technically necessary, is effectively necessary frmo a performance standpoint.}
 }
 \value{
-a numeric vector with a Kscore for each sample (the correlation based score used for prediction that kTSCR calculates)
+a numeric vector with a score (K) for each sample (the correlation based score used for prediction that kTSCR calculates)
 }
 \description{
 calculate K score, which should correlate with y and therefore serve as the basis for the regression based prediction. Use the input feature matrix (X) and a set of identified of identified (elder-sibling) pairs to calculate K
@@ -25,6 +25,6 @@ R <- 200 # represents features
 y <- rnorm(C) # represents outcome variable
 X <- matrix(rbeta(R*C, 2, 3), nrow = R)  # simulate data matrix
 pairs <- rbind(c(1,2),c(4,6), c(10,5))
-Kscore <- calc_K_from_pairs(pairs, X)
+K <- calc_K_from_pairs(pairs, X)
 
 }
