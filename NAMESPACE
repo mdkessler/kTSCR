@@ -2,6 +2,7 @@
 
 export(all_equal)
 export(calc_K_from_pairs)
+export(condense_k_cv_output)
 export(elder_weighted_corr_score)
 export(get_elder)
 export(get_pairwise_rank_matrices)

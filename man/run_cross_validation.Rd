@@ -7,14 +7,15 @@
 run_cross_validation(
   y,
   X,
-  Verbose.pass = F,
-  restrict = F,
-  rank = F,
-  Verbose = T,
-  standardize_features = T,
+  Verbose.pass = FALSE,
+  restrict = FALSE,
+  rank = FALSE,
+  Verbose = TRUE,
+  standardize_features = TRUE,
   cluster_corr_prop = 1,
   ct = 1,
-  k = 5
+  k = 5,
+  condensed_output = TRUE
 )
 }
 \arguments{
@@ -37,6 +38,8 @@ run_cross_validation(
 \item{ct}{correlation threshold determined how much a new cluster must improve the current correlation with y in order to be added as a top cluster. A hyperparameter. Default is 1 (meaning any improvement is sufficient to add the next cluster within the greedy framework)}
 
 \item{k}{the k parameter in k fold cross validation (i.e. train/test partitions). Default is 5}
+
+\item{condensed_output}{return output that is condensed and summarized across k_cv iterations, specifically with regard to feature importance}
 }
 \value{
 returns the list given by get_top_clusters for each n fold k cv run and includes the test correlation and train/test splits from each iteration

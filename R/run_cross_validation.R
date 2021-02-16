@@ -1,3 +1,32 @@
+#' Condense k cross validation output
+#'
+#' Condense and summarize output from k cross validation iterations. Specifically, this returns the union of elders across k-cv iterations, and the total per feature of how many sibling pairs it was in across all k-cv iterations
+#'
+#' @param k_cv_res k cross validation result object from function run_cross_validation()
+#'
+#' @return list of four vectors: app_cor, test_cor, elders, feature_importance
+#' @export
+#'
+#' @examples
+#' 
+condense_k_cv_output <- function(k_cv_res){
+  
+  # first condense elders but getting the union of elders across k_cv iterations
+  elders_vec <- unique(unlist(k_cv_res['elders', 1:cv]))
+  
+  # now condense feature importance scores but summing tham across k_cv iterations
+  feature_importance_list <- k_cv_res['feature_importance', 1:k]
+  feature_names <- names(feature_importance_list[[1]])
+  feature_importance_mat <- matrix(unlist(feature_importance_list), ncol=length(feature_importance_list), byrow = FALSE)
+  feature_importance_vec <- apply(mat, 1, sum)
+
+  # output vecs as a dataframe
+  app_corr_vec <- unlist(k_cv_res['app_cor', 1:k])
+  test_corr_vec <- unlist(k_cv_res['test_cor', 1:k]) 
+  return(list(app_corr = app_corr_vec, test_corr = test_corr_vec, elders = elders_vec, feature_importance = feature_importance_vec))
+}
+
+
 #' Run k fold cross validation
 #'
 #' This function runs k fold cross validation by splitting input data into k partitions and holding out each partition as the test set in k different learning iterations. 
@@ -12,6 +41,7 @@
 #' @param cluster_corr_prop what proportion of the maximum (weighted) cluster correlation with y should be reflected by the chosen siblings. A hyperparameter. Default is 1 (meaning include all elder-sibling pairs in cluster)
 #' @param ct correlation threshold determined how much a new cluster must improve the current correlation with y in order to be added as a top cluster. A hyperparameter. Default is 1 (meaning any improvement is sufficient to add the next cluster within the greedy framework)
 #' @param k the k parameter in k fold cross validation (i.e. train/test partitions). Default is 5
+#' @param condensed_output return output that is condensed and summarized across k_cv iterations, specifically with regard to feature importance 
 #'
 #' @return returns the list given by get_top_clusters for each n fold k cv run and includes the test correlation and train/test splits from each iteration
 #' @export
@@ -25,14 +55,15 @@
 #'
 run_cross_validation <- function( y,
                                   X,
-                                  Verbose.pass = F,
-                                  restrict = F,
-                                  rank = F,
-                                  Verbose = T,
-                                  standardize_features = T,
+                                  Verbose.pass = FALSE,
+                                  restrict = FALSE,
+                                  rank = FALSE,
+                                  Verbose = TRUE,
+                                  standardize_features = TRUE,
                                   cluster_corr_prop = 1,
                                   ct = 1.0,
-                                  k = 5
+                                  k = 5,
+                                  condensed_output = TRUE
 ){
   
   if(isTRUE(Verbose)){
@@ -41,7 +72,7 @@ run_cross_validation <- function( y,
   
   # divide y into k parts
   splits <- pact::KfoldCV(length(y), k)
-  k_cv_cors <- sapply(1:k, function(x){
+  k_cv_res <- sapply(1:k, function(x){
     
     if (isTRUE(Verbose)){
       print(paste0('    iteration ', x), quote = F)
@@ -101,7 +132,11 @@ run_cross_validation <- function( y,
     
   })
   
-  return(k_cv_cors)
+  if (isTRUE(condensed_output)){
+    return(condense_k_cv_output(k_cv_res))
+  } else{
+    return(k_cv_res)
+  }
   
 }
 
