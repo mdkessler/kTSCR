@@ -33,19 +33,6 @@ get_top_clusters <- function(y,
                              use_diff_rank = T
 ){
   
-  # y: quantitative data
-  # X: feature matrix, samples as cols
-  # kmax: max value of top pairs to output
-  # if kmax is not set, set it to the number of
-  # features divided by 2 (as this is the
-  # theoretical max if every feature was in a pair
-  # once and only once)
-  # rank: if rank is T, rank(y) is used instead of y
-  # Verbose: whether to print verbosely
-  # restrict: features to restrict to
-  # standardize_features: boolean indicating whether
-  # features should be standardized
-  
   # standardize feature matrix if standardize_features
   # argument == T
   # i.e. scale and center each feature
@@ -204,7 +191,7 @@ get_top_clusters <- function(y,
   # list to output
   res_list <- list(y = y,
                   KScore = K,
-                  Correlation = stats::cor(K, y),
+                  ApparentCorrelation = stats::cor(K, y),
                   ElderIndices = elder_indices,
                   SiblingIndices = sibling_indices,
                   Elders = elders,

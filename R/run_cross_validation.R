@@ -1,6 +1,6 @@
-#' Run n times k fold cross validation
+#' Run k fold cross validation
 #'
-#' This function runs k fold cross validation by splitting input data into k partitions and holding out each partition as the test set in k different learning iterations. This entire k fold cv is then done n times to estimate the robustness of the k fold cv results.
+#' This function runs k fold cross validation by splitting input data into k partitions and holding out each partition as the test set in k different learning iterations. 
 #'
 #' @param y outcome variable
 #' @param X inut feature matrix
@@ -34,8 +34,6 @@ run_cross_validation <- function( y,
                                   cluster_corr_prop = 1,
                                   ct = 1.0,
                                   k = 5,
-                                  n = 5
-  
 ){
   
   if(isTRUE(Verbose)){
@@ -96,14 +94,17 @@ run_cross_validation <- function( y,
       }
     }
     
-    # return
-    TSC.res$test.cor <- test.cor
-    TSC.res$splits <- splits
+    app.cor <- TSC.res$ApparentCorrelation
     
-    return(TSC.res)
+    feature_importance <- sort(table(c(unlist(kTSCR.cv['Elders',1:5]), unlist(kTSCR.cv['Siblings',1:5]))), decreasing = TRUE)
+
+    return(list(app_cor = app.cor, test_cor = test.cor, feature_importance = feature_importance))
     
   })
   
   return(k_cv_cors)
   
 }
+
+
+#This entire k fold cv is then done n times to estimate the robustness of the k fold cv results.
