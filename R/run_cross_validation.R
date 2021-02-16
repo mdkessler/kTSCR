@@ -4,13 +4,14 @@
 #'
 #' @param k_cv_res k cross validation result object from function run_cross_validation()
 #' @param k k number of cross validation iterations, passed from run_cross_validation function
+#' @param app_minus_test_thresh a threshold level for app_cor - test_cor...k-cv iterations that have app_cor - test_cor <= app_minus_test_thresh (i.e. low overfitting) have their siblings added to the consensus siblings ultimately used for prediction. A hyperparameter. Defaults to 0.05
 #'
 #' @return list of four vectors: app_cor, test_cor, elders, feature_importance
 #' @export
 #'
 #' @examples
 #' 
-condense_k_cv_output <- function(k_cv_res, k){
+condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh){
   
   # first condense elders but getting the union of elders across k_cv iterations
   elders_vec <- unique(unlist(k_cv_res['elders', 1:k]))
@@ -22,10 +23,29 @@ condense_k_cv_output <- function(k_cv_res, k){
   feature_importance_vec <- apply(feature_importance_mat, 1, sum)
   names(feature_importance_vec) <- feature_names
   
-  # output vecs as a dataframe
+  # now condense sibling pairs
+  
+  # first, get the union of siblings across k-cv iterations
+  siblings_list <- lapply(k_cv_res['siblings', 1:k], function(x){ # format feature names and paste features together per pairwise feature
+    apply(x, 1, function(x){paste0(x, collapse = "_")})
+  })
+  siblings_vec <- Reduce(intersect, siblings_list) # get intersect
+
+  # now add sibling from any k-cv iteration where app_cor - test_cor <= 0.05 (TODO - make this a hyperparameter)
   app_corr_vec <- unlist(k_cv_res['app_cor', 1:k])
-  test_corr_vec <- unlist(k_cv_res['test_cor', 1:k]) 
-  return(list(app_corr = app_corr_vec, test_corr = test_corr_vec, elders = elders_vec, feature_importance = feature_importance_vec))
+  test_corr_vec <- unlist(k_cv_res['test_cor', 1:k])
+  app_minus_test <- app_corr_vec - test_corr_vec
+  app_minus_test_pass_thresh <- app_minus_test <= app_minus_test_thresh
+  for (i in which(app_minus_test_pass_thresh)){
+    siblings_to_add <- apply(k_cv_res['siblings', i], 1, function(x){paste0(x, collapse = "_")})
+    siblings_vec <- union(siblings_vec, siblings_to_add)
+  }
+  
+  # convert siblings_vec back into indices matrix
+  siblings_mat <- get_sibling_indices(siblings_vec)
+  
+  # output vecs as a list
+  return(list(app_corr = app_corr_vec, test_corr = test_corr_vec, elders = elders_vec, siblings = siblings_mat, feature_importance = feature_importance_vec))
 }
 
 
@@ -130,7 +150,7 @@ run_cross_validation <- function( y,
     
     feature_importance <- sort(table(TSC.res$Siblings), decreasing = TRUE)
 
-    return(list(app_cor = app.cor, test_cor = test.cor, elders = TSC.res$Elders, feature_importance = feature_importance))
+    return(list(app_cor = app.cor, test_cor = test.cor, elders = TSC.res$Elders, siblings = TSC.res$Siblings,feature_importance = feature_importance))
     
   })
   

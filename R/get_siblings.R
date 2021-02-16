@@ -155,7 +155,7 @@ get_siblings <- function(sorted_corrs, elder, elder_corr, cluster_corr_prop = 1)
 #' @export
 #'
 #' @examples
-#' siblings <- c("V1", "V20", "V100", "V101")
+#' siblings <- c("V1_V3", "V20_V5", "V100_V110", "V101_V50")
 #' sibling_indices <- get_sibling_indices(siblings)
 #' 
 #' 

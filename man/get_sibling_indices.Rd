@@ -16,7 +16,7 @@ returns siblings as a numeric vector of indices rather than the character vector
 Convert sibling feature names into indices from the original feature matrix X
 }
 \examples{
-siblings <- c("V1", "V20", "V100", "V101")
+siblings <- c("V1_V3", "V20_V5", "V100_V110", "V101_V50")
 sibling_indices <- get_sibling_indices(siblings)
 
 
