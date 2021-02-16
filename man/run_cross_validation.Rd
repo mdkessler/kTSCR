@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_cross_validation.R
 \name{run_cross_validation}
 \alias{run_cross_validation}
-\title{Run n times k fold cross validation}
+\title{Run k fold cross validation}
 \usage{
 run_cross_validation(
   y,
@@ -14,8 +14,7 @@ run_cross_validation(
   standardize_features = T,
   cluster_corr_prop = 1,
   ct = 1,
-  k = 5,
-  n = 5
+  k = 5
 )
 }
 \arguments{
@@ -38,14 +37,12 @@ run_cross_validation(
 \item{ct}{correlation threshold determined how much a new cluster must improve the current correlation with y in order to be added as a top cluster. A hyperparameter. Default is 1 (meaning any improvement is sufficient to add the next cluster within the greedy framework)}
 
 \item{k}{the k parameter in k fold cross validation (i.e. train/test partitions). Default is 5}
-
-\item{n}{(TODO - add this 'n times k cv' feature!) number of times to run k fold cross validation. Default is 5}
 }
 \value{
 returns the list given by get_top_clusters for each n fold k cv run and includes the test correlation and train/test splits from each iteration
 }
 \description{
-This function runs k fold cross validation by splitting input data into k partitions and holding out each partition as the test set in k different learning iterations. This entire k fold cv is then done n times to estimate the robustness of the k fold cv results.
+This function runs k fold cross validation by splitting input data into k partitions and holding out each partition as the test set in k different learning iterations.
 }
 \examples{
 C <- 100  # represents samples
