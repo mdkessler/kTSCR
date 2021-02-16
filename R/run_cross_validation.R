@@ -3,16 +3,17 @@
 #' Condense and summarize output from k cross validation iterations. Specifically, this returns the union of elders across k-cv iterations, and the total per feature of how many sibling pairs it was in across all k-cv iterations
 #'
 #' @param k_cv_res k cross validation result object from function run_cross_validation()
+#' @param k k number of cross validation iterations, passed from run_cross_validation function
 #'
 #' @return list of four vectors: app_cor, test_cor, elders, feature_importance
 #' @export
 #'
 #' @examples
 #' 
-condense_k_cv_output <- function(k_cv_res){
+condense_k_cv_output <- function(k_cv_res, k){
   
   # first condense elders but getting the union of elders across k_cv iterations
-  elders_vec <- unique(unlist(k_cv_res['elders', 1:cv]))
+  elders_vec <- unique(unlist(k_cv_res['elders', 1:k]))
   
   # now condense feature importance scores but summing tham across k_cv iterations
   feature_importance_list <- k_cv_res['feature_importance', 1:k]
@@ -133,7 +134,7 @@ run_cross_validation <- function( y,
   })
   
   if (isTRUE(condensed_output)){
-    return(condense_k_cv_output(k_cv_res))
+    return(condense_k_cv_output(k_cv_res, k))
   } else{
     return(k_cv_res)
   }

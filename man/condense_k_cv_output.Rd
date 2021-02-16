@@ -4,10 +4,12 @@
 \alias{condense_k_cv_output}
 \title{Condense k cross validation output}
 \usage{
-condense_k_cv_output(k_cv_res)
+condense_k_cv_output(k_cv_res, k)
 }
 \arguments{
 \item{k_cv_res}{k cross validation result object from function run_cross_validation()}
+
+\item{k}{k number of cross validation iterations, passed from run_cross_validation function}
 }
 \value{
 list of four vectors: app_cor, test_cor, elders, feature_importance
