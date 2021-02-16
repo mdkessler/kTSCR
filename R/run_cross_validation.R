@@ -1,17 +1,57 @@
+#' Weight feature importance sum on the basis of overfitting
+#'
+#' When calculating feature importance by tallying the number of times a feature is in a sibling within and then across k-cv iterations, weight the tally by the overfitting seen in the iteration, as measured by app_cor - test_cor
+#'
+#' @param k_cv_res result from run_cross_validation (called with condensed_output = TRUE)
+#' @param feature_importance_mat feature importance values from each kTSCR iteration derived from how many times a feature was seen in a sibling
+#' @param penalty a penalty used in the weighting. A (potential) hyperparameter. Default is 5.
+#'
+#' @return numeric vector of weighted feature importance sums
+#' @export
+#'
+#' @examples
+#' 
+app_minus_thresh_weighted_sum <- function(k_cv_res, feature_importance_mat, penalty = 5){
+  app_minus_test <- get_app_minus_test(k_cv_res)
+  app_minus_test_weights <- 1 / (1 + app_minus_test)**penalty # this ensure that overfit iterations are down-weighted and underfit iterations are upweighted
+  # now return a linear combination of columns in feature_importance_mat weighted by app_minus_test_weights
+  return(feature_importance_mat %*% app_minus_test_weights)
+}  
+
+#' Calculate apparent correlation minus test correlation
+#'
+#' Calculate app_cor - test_cor as a measure of overfitting at each k-cv iteration
+#'
+#' @param k_cv_res result from run_cross_validation (called with condensed_output = TRUE)
+#'
+#' @return a numeric vector with app_cor - test_cor
+#' @export
+#'
+#' @examples
+#' 
+get_app_minus_test <- function(k_cv_res){
+  app_corr_vec <- unlist(k_cv_res['app_cor', 1:k])
+  test_corr_vec <- unlist(k_cv_res['test_cor', 1:k])
+  app_minus_test <- app_corr_vec - test_corr_vec
+  
+  return(app_minus_test)
+}
+  
 #' Condense k cross validation output
 #'
 #' Condense and summarize output from k cross validation iterations. Specifically, this returns the union of elders across k-cv iterations, and the total per feature of how many sibling pairs it was in across all k-cv iterations
 #'
 #' @param k_cv_res k cross validation result object from function run_cross_validation()
 #' @param k k number of cross validation iterations, passed from run_cross_validation function
-#' @param app_minus_test_thresh a threshold level for app_cor - test_cor...k-cv iterations that have app_cor - test_cor <= app_minus_test_thresh (i.e. low overfitting) have their siblings added to the consensus siblings ultimately used for prediction. A hyperparameter. Defaults to 0.05
+#' @param app_minus_test_thresh a threshold level for app_cor - test_cor...k-cv iterations that have app_cor - test_cor <= app_minus_test_thresh (i.e. low overfitting) have their siblings added to the consensus siblings ultimately used for prediction. A hyperparameter. Defaults to 0.10
+#' @param weight_sum_by_app_minus_thresh A logical. Indicates whether the sums across k-cv iterations used for feature importance should be weighted by app_cor - test_cor (i.e. higher weight to k-cv iterations that overfit less). Default is true.
 #'
 #' @return list of four vectors: app_cor, test_cor, elders, feature_importance
 #' @export
 #'
 #' @examples
 #' 
-condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh){
+condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh = 0.10, weight_sum_by_app_minus_thresh = TRUE){
   
   # first condense elders but getting the union of elders across k_cv iterations
   elders_vec <- unique(unlist(k_cv_res['elders', 1:k]))
@@ -20,7 +60,11 @@ condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh){
   feature_importance_list <- k_cv_res['feature_importance', 1:k]
   feature_names <- names(feature_importance_list[[1]])
   feature_importance_mat <- matrix(unlist(feature_importance_list), ncol=length(feature_importance_list), byrow = FALSE)
-  feature_importance_vec <- apply(feature_importance_mat, 1, sum)
+  if (isTRUE(weight_sum_by_app_minus_thresh)){
+    feature_importance_vec <- app_minus_thresh_weighted_sum(k_cv_res, feature_importance_mat)
+  }else{
+    feature_importance_vec <- apply(feature_importance_mat, 1, sum)
+  }
   names(feature_importance_vec) <- feature_names
   
   # now condense sibling pairs
@@ -32,9 +76,7 @@ condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh){
   siblings_vec <- Reduce(intersect, siblings_list) # get intersect
 
   # now add sibling from any k-cv iteration where app_cor - test_cor <= 0.05 (TODO - make this a hyperparameter)
-  app_corr_vec <- unlist(k_cv_res['app_cor', 1:k])
-  test_corr_vec <- unlist(k_cv_res['test_cor', 1:k])
-  app_minus_test <- app_corr_vec - test_corr_vec
+  app_minus_test <- get_app_minus_test(k_cv_res)
   app_minus_test_pass_thresh <- app_minus_test <= app_minus_test_thresh
   for (i in which(app_minus_test_pass_thresh)){
     siblings_to_add <- apply(k_cv_res['siblings', i], 1, function(x){paste0(x, collapse = "_")})

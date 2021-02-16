@@ -4,14 +4,21 @@
 \alias{condense_k_cv_output}
 \title{Condense k cross validation output}
 \usage{
-condense_k_cv_output(k_cv_res, k, app_minus_test_thresh)
+condense_k_cv_output(
+  k_cv_res,
+  k,
+  app_minus_test_thresh = 0.1,
+  weight_sum_by_app_minus_thresh = TRUE
+)
 }
 \arguments{
 \item{k_cv_res}{k cross validation result object from function run_cross_validation()}
 
 \item{k}{k number of cross validation iterations, passed from run_cross_validation function}
 
-\item{app_minus_test_thresh}{a threshold level for app_cor - test_cor...k-cv iterations that have app_cor - test_cor <= app_minus_test_thresh (i.e. low overfitting) have their siblings added to the consensus siblings ultimately used for prediction. A hyperparameter. Defaults to 0.05}
+\item{app_minus_test_thresh}{a threshold level for app_cor - test_cor...k-cv iterations that have app_cor - test_cor <= app_minus_test_thresh (i.e. low overfitting) have their siblings added to the consensus siblings ultimately used for prediction. A hyperparameter. Defaults to 0.10}
+
+\item{weight_sum_by_app_minus_thresh}{A logical. Indicates whether the sums across k-cv iterations used for feature importance should be weighted by app_cor - test_cor (i.e. higher weight to k-cv iterations that overfit less). Default is true.}
 }
 \value{
 list of four vectors: app_cor, test_cor, elders, feature_importance
