@@ -83,6 +83,7 @@ condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh = 0.10, weig
   for (i in which(app_minus_test_pass_thresh)){
     print(i)
     print(which(app_minus_test_pass_thresh))
+    print(k_cv_res["siblings", i])
     siblings_to_add <- apply(k_cv_res['siblings', i], 1, function(x){paste0(x, collapse = "_")})
     siblings_vec <- union(siblings_vec, siblings_to_add)
   }
