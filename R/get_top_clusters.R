@@ -102,7 +102,7 @@ get_top_clusters <- function(y,
     
     # FIND ELDER AND SIBLINGS
     
-    # first calculate the sorted c
+    # first calculate the sorted corrs
     sorted_corrs <- get_sorted_corrs_pairwise_features(pairwise_feature_mat, y)
     # identify ELDER using correlation-based feature scores - this is done each iteration using the updated pairwise_feature_mat
     elder_corr <- get_elder(sorted_corrs)
@@ -110,7 +110,7 @@ get_top_clusters <- function(y,
     # Use elder to identify SIBLINGS (elder + siblings define the cluster)
     siblings <- get_siblings(sorted_corrs, elder, elder_corr, cluster_corr_prop = cluster_corr_prop)
     
-    # Check to see if any brothers were found.
+    # Check to see if any siblings were found.
     # If they weren't, then BREAK the while loop and DO NOT
     # save the elder or any updates to any variables
     # i.e. the greedy optimization has finished
@@ -122,7 +122,7 @@ get_top_clusters <- function(y,
     }
     
     # if you don't break...
-    # convert brother pairs into indices for use in calculating K score with them
+    # convert sibling pairs into indices for use in calculating K score with them
     siblings <- get_sibling_indices(siblings)
     # Test for another WHILE LOOP BREAK CONDITION - CORRELATION CONVERGENCE
     new_K <- K + calc_K_from_pairs(siblings, X, restrict = restrict)
