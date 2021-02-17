@@ -51,18 +51,8 @@ get_top_clusters <- function(y,
   # require that length(y) == ncol(X)
   stopifnot(length(y) == ncol(X))
   
-  # PERFORM INITIAL CALCULATIONS
-  
-  # generate list of  pairwise comparison matrices
-  if (Verbose){
-    print('Calculating pairwise indicator matrices', quote = F)
-  }
-  
-  Is <- get_pairwise_rank_matrices(X, restrict, use_diff_rank)
-  pairwise_feature_mat <- make_feature_pair_score_matrix(Is)
-
   # INITIALIZE VARIABLES
-  # 
+ 
   if (Verbose){
     
     print('Initializing variables', quote = F)
@@ -74,7 +64,19 @@ get_top_clusters <- function(y,
   k <- 1 # little k - pair you're up to - max K must be <= k each iteration
   last_corr <- 0
   
+  # PERFORM INITIAL CALCULATIONS
+  
+  # generate list of  pairwise comparison matrices
+  if (Verbose){
+    print('Calculating pairwise indicator matrices', quote = F)
+  }
+  
+  Is <- get_pairwise_rank_matrices(X, restrict, use_diff_rank)
+  pairwise_feature_mat <- make_feature_pair_score_matrix(Is)
+  
+  
   # WHILE LOOP
+  
   # use a while loop to identify pairs that optimize correlation
   
   if (Verbose){
