@@ -32,7 +32,7 @@ get_app_minus_test <- function(k_cv_res, k){
 #'
 #' @examples
 #' 
-app_minus_thresh_weighted_sum <- function(k_cv_res, feature_importance_mat, k, penalty = 5){
+app_minus_test_thresh_weighted_sum <- function(k_cv_res, feature_importance_mat, k, penalty = 5){
   app_minus_test <- get_app_minus_test(k_cv_res, k)
   app_minus_test_weights <- 1 / (1 + app_minus_test)**penalty # this ensure that overfit iterations are down-weighted and underfit iterations are upweighted
   # now return a linear combination of columns in feature_importance_mat weighted by app_minus_test_weights
@@ -58,12 +58,12 @@ condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh = 0.10, weig
   # first condense elders by getting the union of elders across k_cv iterations
   elders_vec <- unique(unlist(k_cv_res['elders', 1:k]))
   
-  # now condense feature importance scores but summing tham across k_cv iterations
+  # now condense feature importance scores but summing them across k_cv iterations
   feature_importance_list <- k_cv_res['feature_importance', 1:k]
   feature_names <- names(feature_importance_list[[1]])
   feature_importance_mat <- matrix(unlist(feature_importance_list), ncol=length(feature_importance_list), byrow = FALSE)
   if (isTRUE(weight_sum_by_app_minus_thresh)){
-    feature_importance_vec <- app_minus_thresh_weighted_sum(k_cv_res, feature_importance_mat, k)
+    feature_importance_vec <- app_minus_test_thresh_weighted_sum(k_cv_res, feature_importance_mat, k)
   }else{
     feature_importance_vec <- apply(feature_importance_mat, 1, sum)
   }
@@ -71,7 +71,7 @@ condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh = 0.10, weig
   
   # now condense sibling pairs
   
-  # first, get the union of siblings across k-cv iterations
+  # first, get the intersect of siblings across k-cv iterations
   siblings_list <- lapply(k_cv_res['siblings', 1:k], function(x){ # format feature names and paste features together per pairwise feature
     apply(x, 1, function(x){paste0(x, collapse = "_")})
   })
