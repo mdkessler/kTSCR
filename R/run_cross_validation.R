@@ -69,6 +69,9 @@ condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh = 0.10, weig
   }
   rownames(feature_importance_vec) <- feature_names
   
+  # use feature importance scores to choose top features - this will be used below to filter siblings
+  top_features <- choose_top_features(feature_importance_vec)
+    
   # now condense sibling pairs
   
   # first, get the intersect of siblings across k-cv iterations
@@ -81,7 +84,14 @@ condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh = 0.10, weig
   app_minus_test <- get_app_minus_test(k_cv_res, k)
   app_minus_test_pass_thresh <- app_minus_test <= app_minus_test_thresh
   for (i in which(app_minus_test_pass_thresh)){
-    siblings_to_add <- apply(k_cv_res['siblings', i][[1]], 1, function(x){paste0(x, collapse = "_")})
+    # first, only keep sibling if one feature is an elder
+    siblings_with_elders <- which(apply(k_cv_res['siblings', i][[1]], 1, function(x){
+      x[,1] %in% top_features | x[,2] %in% top_features
+    }))
+    
+    siblings_filtered <- k_cv_res['siblings', i][[1]][siblings_with_elders, ]
+    # now format the names
+    siblings_to_add <- apply(siblings_filtered, 1, function(x){paste0(x, collapse = "_")})
     siblings_vec <- union(siblings_vec, siblings_to_add)
   }
   
