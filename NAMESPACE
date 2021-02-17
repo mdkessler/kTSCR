@@ -3,6 +3,7 @@
 export(all_equal)
 export(app_minus_test_thresh_weighted_sum)
 export(calc_K_from_pairs)
+export(choose_top_features)
 export(condense_k_cv_output)
 export(elder_weighted_corr_score)
 export(get_app_minus_test)
