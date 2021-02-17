@@ -86,6 +86,9 @@ condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh = 0.10, weig
   for (i in which(app_minus_test_pass_thresh)){
     # first, only keep sibling if one feature is an elder
     siblings_with_elders <- which(apply(k_cv_res['siblings', i][[1]], 1, function(x){
+      print(x)
+      print(length(x))
+      print(typeof(x))
       x[,1] %in% top_features | x[,2] %in% top_features
     }))
     
