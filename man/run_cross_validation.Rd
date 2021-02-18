@@ -14,6 +14,7 @@ run_cross_validation(
   standardize_features = TRUE,
   cluster_corr_prop = 1,
   ct = 1,
+  sibling_prune = 0.1,
   k = 5,
   condensed_output = TRUE
 )
@@ -36,6 +37,8 @@ run_cross_validation(
 \item{cluster_corr_prop}{what proportion of the maximum (weighted) cluster correlation with y should be reflected by the chosen siblings. A hyperparameter. Default is 1 (meaning include all elder-sibling pairs in cluster)}
 
 \item{ct}{correlation threshold determined how much a new cluster must improve the current correlation with y in order to be added as a top cluster. A hyperparameter. Default is 1 (meaning any improvement is sufficient to add the next cluster within the greedy framework)}
+
+\item{sibling_prune}{numeric between 0-1 that sets the threshold for how close apparent correlation and test correlation must be for a k-cv iteration to contribute its siblings to the final chosen siblings. In other words, a lower number is more stringent, since it means the overfitting had to be really low in a k-cv iteration for it to contribute to the final sibling output.}
 
 \item{k}{the k parameter in k fold cross validation (i.e. train/test partitions). Default is 5}
 

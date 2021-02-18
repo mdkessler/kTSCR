@@ -120,10 +120,11 @@ get_top_clusters <- function(y,
       }
       break
     }
-    print(siblings)
+    
     # if you don't break...
     # convert sibling pairs into indices for use in calculating K score with them
-    siblings <- get_sibling_indices(X, siblings)
+    
+    siblings <- split_sibling_indices(siblings)
     
     # Test for another WHILE LOOP BREAK CONDITION - CORRELATION CONVERGENCE
     new_K <- K + calc_K_from_pairs(siblings, X, restrict = restrict)

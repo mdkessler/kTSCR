@@ -145,33 +145,58 @@ get_siblings <- function(sorted_corrs, elder, elder_corr, cluster_corr_prop = 1)
   
 }
 
-#' Get indices of sibling features
+#' Split pairwise features into numeric indices
 #'
-#' Convert sibling feature names into indices from the original feature matrix X
+#' Convert character vector of pairwise features (i.e. siblings)  into numeric matrix of indices from the original feature matrix X
 #'
-#' @param X input feature vector
-#' @param siblings a vector of sibling names (each of which is a character vector, i.e. string)
+#' @param siblings a vector of sibling names made of indices concatenated by underscore (is a string)
 #'
 #' @return returns siblings as a numeric vector of indices rather than the character vector version of said indices
 #' @export
 #'
 #' @examples
+#' siblings <- c("1_3", "20_5", "100_110", "101_50")
+#' sibling_indices <- split_sibling_indices(siblings)
+#' 
+#' 
+split_sibling_indices <- function(siblings){
+  
+  return(t(apply(do.call(rbind, strsplit(siblings, "_")), 1, as.numeric)))
+}
+
+#' Split pairwise features into character vector
+#'
+#' Convert character vector of concatenated pairwise features (i.e. siblings)  into a 'character vector' matrix of split names (i.e. original non-pairwise feature names)
+#'
+#' @param siblings a vector of sibling names (each of which is a character vector, i.e. string)
+#'
+#' @return returns siblings as a character vector of split names reflecting pairs of independent features from the original matrix X
+#' @export
+#'
+#' @examples
 #' siblings <- c("V1_V3", "V20_V5", "V100_V110", "V101_V50")
-#' sibling_indices <- get_sibling_indices(siblings)
+#' sibling_indices <- split_sibling_names(siblings)
 #' 
 #' 
-get_sibling_indices <- function(X, siblings){
+
+split_sibling_names <- function(siblings){
   
-  indices = tryCatch({
-    t(apply(do.call(rbind, strsplit(gsub("V", "", siblings), "_")), 1, as.numeric))
-  }, warning = function(cond) {
-    message("Warning!")
-    return(NA)
-  }, error = function(cond) {
-    mapdf <- data.frame(feature_names = rownames(X), feature_indices = 1:nrow(X))
-    indices <- matrix(mapdf$feature_indices[match(do.call(rbind, strsplit(siblings, "_")),mapdf$feature_names)], ncol = 2, byrow = FALSE)
-    return(indices)
-  }, finally=NULL)
+  return(do.call(rbind, strsplit(siblings, "_")))
+}
+
+#' Convert sibling names to indices
+#'
+#' @param X input matrix
+#' @param siblings character vector (as a matrix) of feature names
+#'
+#' @return character vector (as a matrix) of feature indices
+#' @export
+#'
+#' @examples
+convert_sibling_names_to_indices <- function(X, siblings){
   
+  mapdf <- data.frame(feature_names = rownames(X), feature_indices = 1:nrow(X))
+  indices <- matrix(mapdf$feature_indices[match(siblings,mapdf$feature_names)], ncol = 2, byrow = FALSE)
+
   return(indices)
 }

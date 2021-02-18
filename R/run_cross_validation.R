@@ -81,30 +81,46 @@ condense_k_cv_output <- function(X, k_cv_res, k, app_minus_test_thresh = 0.10, w
   })
   siblings_vec <- Reduce(intersect, siblings_list) # get intersect
   
-  # now add sibling from any k-cv iteration where app_cor - test_cor <= 0.10 (TODO - make this a hyperparameter)
+  # now add sibling from any k-cv iteration where app_cor - test_cor <= app_minus_test_thresh
   app_minus_test <- get_app_minus_test(k_cv_res, k)
   app_minus_test_pass_thresh <- app_minus_test <= app_minus_test_thresh
-  for (i in which(app_minus_test_pass_thresh)){
-    # first, only keep sibling if one feature is an elder
-    siblings_with_elders <- which(
-      k_cv_res['siblings', i][[1]][,1] %in% top_features
+  if (sum(app_minus_test_pass_thresh) > 0){
+    for (i in which(app_minus_test_pass_thresh)){
+      # first, only keep sibling if one feature is an elder
+      siblings_with_top_features <- which(
+        k_cv_res['siblings', i][[1]][,1] %in% top_features
+          | # or
+        k_cv_res['siblings', i][[1]][,2] %in% top_features
+      )
+      
+      siblings_filtered <- k_cv_res['siblings', i][[1]][siblings_with_top_features, ]
+      # now format the names
+      siblings_to_add <- apply(siblings_filtered, 1, function(x){paste0(x, collapse = "_")})
+      siblings_vec <- union(siblings_vec, siblings_to_add)
+    }
+  } else{
+    for (i in which(k_cv_res$test_corr >= 0.2)){
+      # first, only keep sibling if one feature is an elder
+      siblings_with_top_features <- which(
+        k_cv_res['siblings', i][[1]][,1] %in% top_features
         | # or
-      k_cv_res['siblings', i][[1]][,2] %in% top_features
-    )
-    
-    siblings_filtered <- k_cv_res['siblings', i][[1]][siblings_with_elders, ]
-    # now format the names
-    siblings_to_add <- apply(siblings_filtered, 1, function(x){paste0(x, collapse = "_")})
-    siblings_vec <- union(siblings_vec, siblings_to_add)
+          k_cv_res['siblings', i][[1]][,2] %in% top_features
+      )
+      
+      siblings_filtered <- k_cv_res['siblings', i][[1]][siblings_with_top_features, ]
+      # now format the names
+      siblings_to_add <- apply(siblings_filtered, 1, function(x){paste0(x, collapse = "_")})
+      siblings_vec <- union(siblings_vec, siblings_to_add)
+    }
   }
-  
   # convert siblings_vec back into indices matrix
-  siblings_mat <- get_sibling_indices(X, siblings_vec)
+  siblings_mat <- split_sibling_names(siblings_vec)
+  siblings_indices_mat <- convert_sibling_names_to_indices(X, siblings_mat)
   
   # output vecs as a list
   app_corr_vec <- unlist(k_cv_res['app_cor', 1:k])
   test_corr_vec <- unlist(k_cv_res['test_cor', 1:k])
-  return(list(app_corr = app_corr_vec, test_corr = test_corr_vec, elders = elders_vec, siblings = siblings_mat, feature_importance = feature_importance_vec))
+  return(list(app_corr = app_corr_vec, test_corr = test_corr_vec, elders = elders_vec, siblings = siblings_mat, siblings_indices = siblings_indices_mat, feature_importance = feature_importance_vec))
 }
 
 
@@ -121,6 +137,7 @@ condense_k_cv_output <- function(X, k_cv_res, k, app_minus_test_thresh = 0.10, w
 #' @param standardize_features logical as to whether to standardize all features of X
 #' @param cluster_corr_prop what proportion of the maximum (weighted) cluster correlation with y should be reflected by the chosen siblings. A hyperparameter. Default is 1 (meaning include all elder-sibling pairs in cluster)
 #' @param ct correlation threshold determined how much a new cluster must improve the current correlation with y in order to be added as a top cluster. A hyperparameter. Default is 1 (meaning any improvement is sufficient to add the next cluster within the greedy framework)
+#' @param sibling_prune numeric between 0-1 that sets the threshold for how close apparent correlation and test correlation must be for a k-cv iteration to contribute its siblings to the final chosen siblings. In other words, a lower number is more stringent, since it means the overfitting had to be really low in a k-cv iteration for it to contribute to the final sibling output.
 #' @param k the k parameter in k fold cross validation (i.e. train/test partitions). Default is 5
 #' @param condensed_output return output that is condensed and summarized across k_cv iterations, specifically with regard to feature importance 
 #'
@@ -143,6 +160,7 @@ run_cross_validation <- function( y,
                                   standardize_features = TRUE,
                                   cluster_corr_prop = 1,
                                   ct = 1.0,
+                                  sibling_prune = 0.10,
                                   k = 5,
                                   condensed_output = TRUE
 ){
@@ -214,7 +232,7 @@ run_cross_validation <- function( y,
   })
   
   if (isTRUE(condensed_output)){
-    return(condense_k_cv_output(X, k_cv_res, k))
+    return(condense_k_cv_output(X, k_cv_res, k, app_minus_test_thresh = sibling_prune))
   } else{
     return(k_cv_res)
   }
