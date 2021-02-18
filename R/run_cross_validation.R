@@ -43,6 +43,7 @@ app_minus_test_thresh_weighted_sum <- function(k_cv_res, feature_importance_mat,
 #'
 #' Condense and summarize output from k cross validation iterations. Specifically, this returns the union of elders across k-cv iterations, and the total per feature of how many sibling pairs it was in across all k-cv iterations
 #'
+#' @param X input feature matrix
 #' @param k_cv_res k cross validation result object from function run_cross_validation()
 #' @param k k number of cross validation iterations, passed from run_cross_validation function
 #' @param app_minus_test_thresh a threshold level for app_cor - test_cor...k-cv iterations that have app_cor - test_cor <= app_minus_test_thresh (i.e. low overfitting) have their siblings added to the consensus siblings ultimately used for prediction. A hyperparameter. Defaults to 0.10
@@ -53,7 +54,7 @@ app_minus_test_thresh_weighted_sum <- function(k_cv_res, feature_importance_mat,
 #'
 #' @examples
 #' 
-condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh = 0.10, weight_sum_by_app_minus_thresh = TRUE){
+condense_k_cv_output <- function(X, k_cv_res, k, app_minus_test_thresh = 0.10, weight_sum_by_app_minus_thresh = TRUE){
   
   # first condense elders by getting the union of elders across k_cv iterations
   elders_vec <- unique(unlist(k_cv_res['elders', 1:k]))
@@ -99,7 +100,7 @@ condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh = 0.10, weig
   print("test5")
   print(siblings_vec)
   # convert siblings_vec back into indices matrix
-  siblings_mat <- get_sibling_indices(siblings_vec)
+  siblings_mat <- get_sibling_indices(X, siblings_vec)
   print("test6")
   # output vecs as a list
   app_corr_vec <- unlist(k_cv_res['app_cor', 1:k])

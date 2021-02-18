@@ -5,6 +5,7 @@
 \title{Condense k cross validation output}
 \usage{
 condense_k_cv_output(
+  X,
   k_cv_res,
   k,
   app_minus_test_thresh = 0.1,
@@ -12,6 +13,8 @@ condense_k_cv_output(
 )
 }
 \arguments{
+\item{X}{input feature matrix}
+
 \item{k_cv_res}{k cross validation result object from function run_cross_validation()}
 
 \item{k}{k number of cross validation iterations, passed from run_cross_validation function}

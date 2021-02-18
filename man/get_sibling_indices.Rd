@@ -4,9 +4,11 @@
 \alias{get_sibling_indices}
 \title{Get indices of sibling features}
 \usage{
-get_sibling_indices(siblings)
+get_sibling_indices(X, siblings)
 }
 \arguments{
+\item{X}{input feature vector}
+
 \item{siblings}{a vector of sibling names (each of which is a character vector, i.e. string)}
 }
 \value{
