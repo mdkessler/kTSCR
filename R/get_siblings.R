@@ -166,7 +166,7 @@ get_sibling_indices <- function(X, siblings){
     indices <- t(apply(do.call(rbind, strsplit(gsub("V", "", siblings), "_")), 1, as.numeric))
   } else{
     mapdf <- data.frame(feature_names = rownames(X), feature_indices = 1:nrow(X))
-    indices <- matrix(mapdf$feature_indices[match(do.call(rbind, strsplit(tt, "_")),mapdf$feature_names)], ncol = 2, byrow = FALSE)
+    indices <- matrix(mapdf$feature_indices[match(do.call(rbind, strsplit(siblings, "_")),mapdf$feature_names)], ncol = 2, byrow = FALSE)
   }
   return(indices)
 }
