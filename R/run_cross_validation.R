@@ -98,7 +98,6 @@ condense_k_cv_output <- function(X, k_cv_res, k, app_minus_test_thresh = 0.10, w
     siblings_vec <- union(siblings_vec, siblings_to_add)
   }
   
-  print(siblings_vec)
   # convert siblings_vec back into indices matrix
   siblings_mat <- get_sibling_indices(X, siblings_vec)
   
