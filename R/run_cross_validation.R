@@ -57,7 +57,7 @@ condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh = 0.10, weig
   
   # first condense elders by getting the union of elders across k_cv iterations
   elders_vec <- unique(unlist(k_cv_res['elders', 1:k]))
-  
+  print("test1")
   # now condense feature importance scores but summing them across k_cv iterations
   feature_importance_list <- k_cv_res['feature_importance', 1:k]
   feature_names <- names(feature_importance_list[[1]])
@@ -73,7 +73,7 @@ condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh = 0.10, weig
   top_features <- choose_top_features(feature_importance_vec)
     
   # now condense sibling pairs
-  
+  print("test2")
   # first, get the intersect of siblings across k-cv iterations
   siblings_list <- lapply(k_cv_res['siblings', 1:k], function(x){ # format feature names and paste features together per pairwise feature
     apply(x, 1, function(x){paste0(x, collapse = "_")})
