@@ -162,11 +162,16 @@ get_siblings <- function(sorted_corrs, elder, elder_corr, cluster_corr_prop = 1)
 #' 
 get_sibling_indices <- function(X, siblings){
   
-  if (is.null(rownames(X))){
-    indices <- t(apply(do.call(rbind, strsplit(gsub("V", "", siblings), "_")), 1, as.numeric))
-  } else{
+  indices = tryCatch({
+    t(apply(do.call(rbind, strsplit(gsub("V", "", siblings), "_")), 1, as.numeric))
+  }, warning = function(cond) {
+    message("Warning!")
+    return(NA)
+  }, error = function(cond) {
     mapdf <- data.frame(feature_names = rownames(X), feature_indices = 1:nrow(X))
     indices <- matrix(mapdf$feature_indices[match(do.call(rbind, strsplit(siblings, "_")),mapdf$feature_names)], ncol = 2, byrow = FALSE)
-  }
+    return(indices)
+  }, finally=NULL)
+  
   return(indices)
 }
