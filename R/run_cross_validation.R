@@ -79,7 +79,7 @@ condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh = 0.10, weig
     apply(x, 1, function(x){paste0(x, collapse = "_")})
   })
   siblings_vec <- Reduce(intersect, siblings_list) # get intersect
-
+  print("test3")
   # now add sibling from any k-cv iteration where app_cor - test_cor <= 0.05 (TODO - make this a hyperparameter)
   app_minus_test <- get_app_minus_test(k_cv_res, k)
   app_minus_test_pass_thresh <- app_minus_test <= app_minus_test_thresh
@@ -90,16 +90,16 @@ condense_k_cv_output <- function(k_cv_res, k, app_minus_test_thresh = 0.10, weig
         | # or
       k_cv_res['siblings', i][[1]][,2] %in% top_features
     )
-    
+    print("test4")
     siblings_filtered <- k_cv_res['siblings', i][[1]][siblings_with_elders, ]
     # now format the names
     siblings_to_add <- apply(siblings_filtered, 1, function(x){paste0(x, collapse = "_")})
     siblings_vec <- union(siblings_vec, siblings_to_add)
   }
-  
+  print("test5")
   # convert siblings_vec back into indices matrix
   siblings_mat <- get_sibling_indices(siblings_vec)
-  
+  print("test6")
   # output vecs as a list
   app_corr_vec <- unlist(k_cv_res['app_cor', 1:k])
   test_corr_vec <- unlist(k_cv_res['test_cor', 1:k])
