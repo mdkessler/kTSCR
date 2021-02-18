@@ -149,6 +149,7 @@ get_siblings <- function(sorted_corrs, elder, elder_corr, cluster_corr_prop = 1)
 #'
 #' Convert sibling feature names into indices from the original feature matrix X
 #'
+#' @param X input feature vector
 #' @param siblings a vector of sibling names (each of which is a character vector, i.e. string)
 #'
 #' @return returns siblings as a numeric vector of indices rather than the character vector version of said indices
@@ -159,9 +160,13 @@ get_siblings <- function(sorted_corrs, elder, elder_corr, cluster_corr_prop = 1)
 #' sibling_indices <- get_sibling_indices(siblings)
 #' 
 #' 
-get_sibling_indices <- function(siblings){
+get_sibling_indices <- function(X, siblings){
   
-  indices <- t(apply(do.call(rbind, strsplit(gsub("V", "", siblings), "_")), 1, as.numeric))
-  
+  if (is.null(rownames(X))){
+    indices <- t(apply(do.call(rbind, strsplit(gsub("V", "", siblings), "_")), 1, as.numeric))
+  } else{
+    mapdf <- data_frame(feature_names = rownames(X), feature_indices = 1:nrow(X))
+    indices <- matrix(mapdf$feature_indices[match(do.call(rbind, strsplit(tt, "_")),mapdf$feature_names)], ncol = 2, byrow = FALSE)
+  }
   return(indices)
 }
