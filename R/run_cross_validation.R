@@ -71,7 +71,11 @@ condense_k_cv_output <- function(X, k_cv_res, k, app_minus_test_thresh = 0.10, w
   rownames(feature_importance_vec) <- feature_names
   
   # use feature importance scores to choose top features - this will be used below to filter siblings
-  top_features <- choose_top_features(feature_importance_vec)
+  if (all_equal(feature_importance_vec)){ # no discrimination between features
+    top_features <- c() # return no top features as kmeans will fail
+  } else{
+    top_features <- choose_top_features(feature_importance_vec)
+  }
     
   # now condense sibling pairs
   
@@ -99,7 +103,7 @@ condense_k_cv_output <- function(X, k_cv_res, k, app_minus_test_thresh = 0.10, w
       siblings_vec <- union(siblings_vec, siblings_to_add)
     }
   } else{
-    for (i in which(k_cv_res$test_corr >= 0.2)){
+    for (i in which(k_cv_res$test_corr >= 0.2)){ # hyperparameter
       # first, only keep sibling if one feature is an elder
       siblings_with_top_features <- which(
         k_cv_res['siblings', i][[1]][,1] %in% top_features
